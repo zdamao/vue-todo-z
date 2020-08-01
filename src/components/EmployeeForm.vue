@@ -63,8 +63,8 @@ export default {
       this.submitting = false;
       this.error = true;
       this.success = true;
-      console.log(this.success);
-      console.log(this.error);
+      // console.log(this.success);
+      // console.log(this.error);
     },
     clearStatus: function () {
       this.error = false;

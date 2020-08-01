@@ -22,45 +22,78 @@ export default {
   },
   data() {
     return {
-      employees: [
-        {
-          id: 1,
-          name: "zdamao",
-          email: "zdamao@126.com",
-        },
-        {
-          id: 2,
-          name: "adamao",
-          email: "adamao@126.com",
-        },
-        {
-          id: 3,
-          name: "bdamao",
-          email: "bdamao@126.com",
-        },
-      ],
+      employees: [],
     };
   },
   methods: {
-    onAddEmployee: function (employee) {
-      const lastId = this.employees[this.employees.length - 1].id;
-      const id = lastId + 1;
-      const newEmployee = { ...employee, id };
-      this.employees = [...this.employees, newEmployee];
+    getEmployees: async function () {
+      try {
+        const response = await fetch(
+          "https://jsonplaceholder.typicode.com/users"
+        );
+        const data = await response.json();
+        this.employees = data;
+      } catch (error) {
+        console.log(error);
+      }
     },
-    onDeleteEmployee: function (id) {
-      this.employees = this.employees.filter((employee) => employee.id !== id);
+    onAddEmployee: async function (employee) {
+      try {
+        const response = await fetch(
+          "https://jsonplaceholder.typicode.com/users",
+          {
+            method: "POST",
+            body: JSON.stringify(employee),
+            headers: { "Content-Type": "application/json; charset=UTF-8" },
+          }
+        );
+        const data = await response.json();
+        this.employees = [...this.employees, data];
+      } catch (error) {
+        console.log(error);
+      }
     },
-    onEditEmployee: function (id, updatedEmployee) {
-      console.log(id, updatedEmployee);
-      // 箭头函数的大括号需要显示return才能返回值，如果单行则不需大括号也会自动返回值
-      this.employees = this.employees.map((employee) => {
-        return employee.id === id ? updatedEmployee : employee;
-      });
-      // this.employees = this.employees.map((employee) =>
-      //   employee.id === id ? updatedEmployee : employee
-      // );
+    onDeleteEmployee: async function (id) {
+      try {
+        await fetch(`https://jsonplaceholder.typicode.com/users/${id}`, {
+          method: "DELETE",
+        });
+        this.employees = this.employees.filter(
+          (employee) => employee.id !== id
+        );
+      } catch (error) {
+        console.log(error);
+      }
+      // this.employees = this.employees.filter((employee) => employee.id !== id);
     },
+    onEditEmployee: async function (id, updatedEmployee) {
+      try {
+        const response = await fetch(
+          `https://jsonplaceholder.typicode.com/users/${id}`,
+          {
+            method: "PUT",
+            body: JSON.stringify(updatedEmployee),
+            headers: { "Content-Type": "application/json; charset=UTF-8" },
+          }
+        );
+        const data = await response.json();
+        this.employees = this.employees.map((employee) => {
+          return employee.id === id ? data : employee;
+        });
+      } catch (error) {
+        console.log(error);
+      }
+      // // 箭头函数的大括号需要显示return才能返回值，如果单行则不需大括号也会自动返回值
+      // this.employees = this.employees.map((employee) => {
+      //   return employee.id === id ? updatedEmployee : employee;
+      // });
+      // // this.employees = this.employees.map((employee) =>
+      // //   employee.id === id ? updatedEmployee : employee
+      // // );
+    },
+  },
+  mounted() {
+    this.getEmployees();
   },
 };
 </script>
